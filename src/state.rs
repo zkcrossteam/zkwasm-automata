@@ -420,10 +420,25 @@ impl Transaction {
         let mut player = AutomataPlayer::get_from_pid(&[self.data[0], self.data[1]]);
         let mut player = match player {
             None => {
-                AutomataPlayer::new_from_pid([self.data[0], self.data[1]])
-            }
+                let mut player = AutomataPlayer::new_from_pid([self.data[0], self.data[1]]);
+                player.check_and_inc_nonce(self.nonce);
+                if let Some (treasure) = player.data.local.0.last_mut() {
+                    *treasure += self.data[2] as i64;
+                    player.store();
+                } else {
+                    unreachable!();
+                }
+            },
             Some(player) => {
-                player
+                player.check_and_inc_nonce(self.nonce);
+                if let Some(treasure) = player.data.local.0.last_mut() {
+                    *treasure += self.data[2] as i64;
+                    let t = player.data.local.0.last().unwrap();
+                    zkwasm_rust_sdk::dbg!("treasure is {}", t);
+                    player.store();
+                } else {
+                    unreachable!();
+                }
             }
         };
         if let Some (treasure) = player.data.local.0.last_mut() {
