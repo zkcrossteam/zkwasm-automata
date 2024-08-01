@@ -28,14 +28,28 @@ function addrToParams(bn: BN): Array<bigint> {
   return [BigInt(`0x${cHex}`), BigInt(`0x${bHex}`), BigInt(`0x${aHex}`)];
 }
 
-function createCommand(command: bigint, objindex: bigint) {
-  return (command << 32n) + objindex;
+function createCommand(nonce: bigint, command: bigint, objindex: bigint) {
+  return (nonce << 16n) + (objindex << 8n) + command;
 }
 
 let account = "1234";
 
 const rpc = new ZKWasmAppRpc("http://localhost:3000");
 
+async function getNonce(): Promise<bigint> {
+  // Get the state response
+  const state = await rpc.queryState(account);
+
+  // Parse the response to ensure it is a plain JSON object
+  const parsedState = JSON.parse(JSON.stringify(state));
+
+  // Extract the data from the parsed response
+  const data = JSON.parse(parsedState.data);
+
+  let nonce = BigInt(data[0].nonce);
+
+  return nonce;
+}
 
 async function main() {
   let finished = 0;
@@ -43,28 +57,33 @@ async function main() {
   let config = await rpc.query_config();
   console.log("config", config);
 
-  let install_command = createCommand(CMD_INSTALL_PLAYER, 0n);
+  let nonce = 0n;
+  let install_command = createCommand(nonce, CMD_INSTALL_PLAYER, 0n);
   finished = await rpc.sendTransaction([install_command,0n,0n,0n], account);
   console.log("install player processed at:", finished);
 
+  nonce = await getNonce();
   let modifiers = encode_modifier([0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n]);
-  let command = createCommand(CMD_INSTALL_OBJECT, 0n);
+  let command = createCommand(nonce, CMD_INSTALL_OBJECT, 0n);
   finished = await rpc.sendTransaction([command, modifiers,0n,0n], account);
   console.log("install object processed at:", finished);
 
-  command = createCommand(CMD_INSTALL_OBJECT, 0n);
+  nonce = await getNonce();
+  command = createCommand(nonce, CMD_INSTALL_OBJECT, 0n);
   finished = await rpc.sendTransaction([command, modifiers,0n,0n], account);
   console.log("install object processed at:", finished);
 
   let state = await rpc.queryState(account);
   console.log("query state:", state);
 
+  nonce = await getNonce();
   let accountInfo = new LeHexBN(query(account).pkx).toU64Array();
-  let command_deposit = createCommand(CMD_DEPOSIT, 0n);
+  let command_deposit = createCommand(nonce, CMD_DEPOSIT, 0n);
   finished = await rpc.sendTransaction([command_deposit, accountInfo[1], accountInfo[2], 1000n], account);
   console.log("deposit processed at:", finished);
 
-  let command_withdraw = createCommand(CMD_WITHDRAW, 0n);
+  nonce = await getNonce();
+  let command_withdraw = createCommand(nonce, CMD_WITHDRAW, 0n);
   let addParams = addrToParams(new BN('123456789011121314', 16));
   finished = await rpc.sendTransaction([command_withdraw, addParams[0], addParams[1], addParams[2]], account);
   console.log("withdraw processed at:", finished);

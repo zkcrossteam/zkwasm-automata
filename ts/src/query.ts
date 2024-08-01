@@ -2,8 +2,8 @@ import { ZKWasmAppRpc } from "zkwasm-ts-server";
 
 const CMD_INSTALL_PLAYER = 1n;
 
-function createCommand(command: bigint, objindex: bigint) {
-  return (command << 32n) + objindex;
+function createCommand(nonce: bigint, command: bigint, objindex: bigint) {
+  return (nonce << 16n) + (objindex << 8n) + command;
 }
 
 let account = "1234";
@@ -11,7 +11,8 @@ let account = "1234";
 const rpc = new ZKWasmAppRpc("http://localhost:3000");
 
 async function main() {
-  let install_command = createCommand(CMD_INSTALL_PLAYER, 0n);
+  let nonce = 0n;
+  let install_command = createCommand(nonce, CMD_INSTALL_PLAYER, 0n);
   await rpc.sendTransaction([install_command,0n,0n,0n], account);
 
   // Get the state response
