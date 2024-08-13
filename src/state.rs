@@ -414,31 +414,25 @@ impl Transaction {
         }
     }
 
-    pub fn deposit(&self, _pkey: &[u64; 4]) -> u32 {
+    pub fn deposit(&self, pkey: &[u64; 4]) -> u32 {
+        let mut admin = AutomataPlayer::get(pkey).unwrap();
+        admin.check_and_inc_nonce(self.nonce);
         let mut player = AutomataPlayer::get_from_pid(&[self.data[0], self.data[1]]);
-        match player.as_mut() {
+        let mut player = match player {
             None => {
-                let mut player = AutomataPlayer::new_from_pid([self.data[0], self.data[1]]);
-                player.check_and_inc_nonce(self.nonce);
-                if let Some (treasure) = player.data.local.0.last_mut() {
-                    *treasure += self.data[2] as i64;
-                    player.store();
-                } else {
-                    unreachable!();
-                }
-            },
-            Some(player) => {
-                player.check_and_inc_nonce(self.nonce);
-                if let Some(treasure) = player.data.local.0.last_mut() {
-                    *treasure += self.data[2] as i64;
-                    let t = player.data.local.0.last().unwrap();
-                    zkwasm_rust_sdk::dbg!("treasure is {}", t);
-                    player.store();
-                } else {
-                    unreachable!();
-                }
+                AutomataPlayer::new_from_pid([self.data[0], self.data[1]])
             }
+            Some(player) => {
+                player
+            }
+        };
+        if let Some (treasure) = player.data.local.0.last_mut() {
+            *treasure += self.data[2] as i64;
+            player.store();
+        } else {
+            unreachable!();
         }
+
         0 // no error occurred
     }
 
