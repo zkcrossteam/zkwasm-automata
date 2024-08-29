@@ -1,4 +1,3 @@
-use crate::settlement::SettlementInfo;
 use crate::state::Attributes;
 use crate::state::Modifier;
 use serde::Serialize;
@@ -103,8 +102,8 @@ impl Config {
     pub fn to_json_string() -> String {
         serde_json::to_string(&CONFIG.clone()).unwrap()
     }
-    pub fn flush_settlement() -> Vec<u8> {
-        SettlementInfo::flush_settlement()
+    pub fn autotick() -> bool {
+        true
     }
 }
 

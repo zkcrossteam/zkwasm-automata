@@ -276,6 +276,19 @@ impl State {
         let counter = QUEUE.0.borrow().counter;
         serde_json::to_string(&(player, objs, counter)).unwrap()
     }
+
+    pub fn preempt() -> bool {
+        false
+    }
+
+    pub fn flush_settlement() -> Vec<u8> {
+        SettlementInfo::flush_settlement()
+    }
+
+    pub fn rand_seed() -> u64 {
+        0
+    }
+
     pub fn store() {
         QUEUE.0.borrow_mut().store();
     }
@@ -418,7 +431,7 @@ impl Transaction {
         let mut admin = AutomataPlayer::get(pkey).unwrap();
         admin.check_and_inc_nonce(self.nonce);
         let mut player = AutomataPlayer::get_from_pid(&[self.data[0], self.data[1]]);
-        let mut player = match player {
+        match player.as_mut() {
             None => {
                 let mut player = AutomataPlayer::new_from_pid([self.data[0], self.data[1]]);
                 player.check_and_inc_nonce(self.nonce);
@@ -441,18 +454,11 @@ impl Transaction {
                 }
             }
         };
-        if let Some (treasure) = player.data.local.0.last_mut() {
-            *treasure += self.data[2] as i64;
-            player.store();
-        } else {
-            unreachable!();
-        }
-
         0 // no error occurred
     }
 
 
-    pub fn process(&self, pkey: &[u64; 4]) -> u32 {
+    pub fn process(&self, pkey: &[u64; 4], _rand: &[u64; 4]) -> u32 {
         let b = match self.command {
             INSTALL_PLAYER => self.install_player(pkey),
             INSTALL_OBJECT => self.install_object(pkey),
