@@ -67,7 +67,7 @@ export class Player {
   async installPlayer() {
     try {
       let finished = await rpc.sendTransaction(
-        [createCommand(0n, CMD_INSTALL_PLAYER, 0n), 0n, 0n, 0n],
+        new BigUint64Array([createCommand(0n, CMD_INSTALL_PLAYER, 0n), 0n, 0n, 0n]),
         this.processingKey
       );
       console.log("installPlayer processed at:", finished);
@@ -83,7 +83,7 @@ export class Player {
     let nonce = await this.getNonce();
     try {
       let finished = await rpc.sendTransaction(
-        [createCommand(nonce, CMD_INSTALL_OBJECT, 0n), encode_modifier(modifiers), 0n, 0n],
+        new BigUint64Array([createCommand(nonce, CMD_INSTALL_OBJECT, 0n), encode_modifier(modifiers), 0n, 0n]),
         this.processingKey
       );
       console.log("installObject processed at:", finished);
@@ -100,7 +100,7 @@ export class Player {
     let accountInfo = new LeHexBN(query(this.processingKey).pkx).toU64Array();
     try {
       let finished = await rpc.sendTransaction(
-        [createCommand(nonce, CMD_DEPOSIT, 0n), accountInfo[1], accountInfo[2], 1000n],
+        new BigUint64Array([createCommand(nonce, CMD_DEPOSIT, 0n), accountInfo[1], accountInfo[2], 1000n]),
         this.processingKey
       );
       console.log("deposit processed at:", finished);
@@ -117,7 +117,7 @@ export class Player {
     let addParams = addrToParams(new BN(address, 16));
     try {
       let finished = await rpc.sendTransaction(
-        [createCommand(nonce, CMD_WITHDRAW, 0n), addParams[0], addParams[1], addParams[2]],
+        new BigUint64Array([createCommand(nonce, CMD_WITHDRAW, 0n), addParams[0], addParams[1], addParams[2]]),
         this.processingKey
       );
       console.log("withdraw processed at:", finished);
