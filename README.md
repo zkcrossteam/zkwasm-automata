@@ -1,49 +1,49 @@
 # ZKWASM application demo
 
-## How to start the backend with nonce
-
-### Prepare environment
+## Prepare environment
 
 For fresh environment, run `source script/environment_linux.sh` for Linux.
 
 If you see some error messages, need manually install the error module in your OS.
 
-### Git clone the backend repo
-
-```
-git clone https://github.com/DelphinusLab/zkwasm-mini-rollup.git
-cd zkwasm-mini-rollup
-git checkout akayi/addNonceCheck
-```
-
-### Start Redis
+## Start Redis
 
 `redis-server`
 
-### Start Mongodb
+## Start Mongodb
 
 ```
 mkdir db
 mongod --dbpath db
 ```
 
-### Start dbservice
-
+## Start dbservice
+Clone the zkwasm mini rollup:
+```
+git clone git@github.com:DelphinusLab/zkwasm-mini-rollup.git
+```
 In `./dbservice`, run `bash run.sh`
 
-### Compiling the bootstrap WASM image.
+# Install & Run Wasm Service
 
-In `./host`, run `make build`
+```
+git clone https://github.com/riddles-are-us/zkwasm-automata
+```
 
-### Compiling the application WASM image.
-
-In `./example`, run `make build`
-
-### Start service
-
+## Install zkwasm-ts-server
 In `./ts`, run:
 ```
 npm install
 npx tsc
-node src/service.js
+```
+
+## Build WASM image:
+In './', run:
+```
+make
+```
+
+## Run WASM service:
+```
+node ts/node_modules/zkwasm-ts-server/src/service.js
 ```
