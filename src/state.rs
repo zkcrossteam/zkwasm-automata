@@ -278,7 +278,12 @@ impl State {
     }
 
     pub fn preempt() -> bool {
-        false
+        let counter = QUEUE.0.borrow().counter;
+        if counter % 30 == 0 {
+            true
+        } else {
+            false
+        }
     }
 
     pub fn flush_settlement() -> Vec<u8> {
@@ -446,8 +451,7 @@ impl Transaction {
                 player.check_and_inc_nonce(self.nonce);
                 if let Some(treasure) = player.data.local.0.last_mut() {
                     *treasure += self.data[2] as i64;
-                    let t = player.data.local.0.last().unwrap();
-                    zkwasm_rust_sdk::dbg!("treasure is {}", t);
+                    //let t = player.data.local.0.last().unwrap();
                     player.store();
                 } else {
                     unreachable!();
@@ -470,8 +474,6 @@ impl Transaction {
                 0
             }
         };
-        let kvpair = unsafe { &mut MERKLE_MAP.merkle.root };
-        zkwasm_rust_sdk::dbg!("root after process {:?}\n", kvpair);
         b
     }
 

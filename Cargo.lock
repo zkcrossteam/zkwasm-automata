@@ -342,7 +342,7 @@ dependencies = [
 [[package]]
 name = "zkwasm-rest-abi"
 version = "0.1.0"
-source = "git+https://github.com/DelphinusLab/zkwasm-mini-rollup#04c652aa8af9e414f2b10c71b2f67b89c79b8ad7"
+source = "git+https://github.com/DelphinusLab/zkwasm-mini-rollup#20fb2f83896caba9dd213d15e04e637619d1991f"
 dependencies = [
  "derive_builder",
  "lazy_static",
