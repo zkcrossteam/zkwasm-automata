@@ -279,7 +279,7 @@ impl State {
 
     pub fn preempt() -> bool {
         let counter = QUEUE.0.borrow().counter;
-        if counter % 30 == 0 {
+        if counter % 5 == 0 {
             true
         } else {
             false
@@ -339,7 +339,7 @@ impl Transaction {
         let nonce = params[0] >> 16;
         let mut data = vec![];
         if command == WITHDRAW {
-            data = vec![0, params[1], params[2], params[3]] // address of withdraw
+            data = vec![params[1], params[2], params[3]] // address of withdraw(Note:amount in params[1])
         } else if command == INSTALL_OBJECT || command == RESTART_OBJECT {
             for b in params[1].to_le_bytes() {
                 data.push(b as u64);
