@@ -281,12 +281,7 @@ impl State {
     }
 
     pub fn preempt() -> bool {
-        let counter = QUEUE.0.borrow().counter;
-        if counter % 5 == 0 {
-            true
-        } else {
-            false
-        }
+        true
     }
 
     pub fn flush_settlement() -> Vec<u8> {
