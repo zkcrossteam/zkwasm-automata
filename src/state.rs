@@ -265,6 +265,9 @@ impl Owner for AutomataPlayer {
 pub struct State {}
 
 impl State {
+    pub fn snapshot() -> String {
+        "".to_string()
+    }
     pub fn get_state(pid: Vec<u64>) -> String {
         let player = AutomataPlayer::get(&pid.try_into().unwrap()).unwrap();
         let mut objs = vec![];
