@@ -13,6 +13,6 @@ use crate::config::Config;
 use crate::state::{State, Transaction};
 
 #[no_mangle]
-pub static ZKC_ENABLE_MERKLE_TREE_SUPPORT: i64 = 3;
+pub static ZKC_ENABLE_MERKLE_TREE_SUPPORT: i64 = 4;
 
 zkwasm_rest_abi::create_zkwasm_apis!(Transaction, State, Config);
